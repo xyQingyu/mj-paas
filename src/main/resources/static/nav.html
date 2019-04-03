@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=emulateIE7" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="css/style.css" />
+<link rel="stylesheet" href="css/zTreeStyle/zTreeStyle.css" type="text/css">
+<link rel="stylesheet" type="text/css" href="css/skin_/nav.css" />
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/global.js"></script>
+<title>底部内容页</title>
+</head>
+
+<body>
+<div id="container">
+	<div id="bd">
+    	<div class="sidebar">
+        	<div class="sidebar-bg"></div>
+            <i class="sidebar-hide"></i>
+            <!--<h2><a href="javascript:;"><i class="h2-icon" title="切换到树型结构"></i><span>安全管理</span></a></h2>
+
+           -->
+            <!-- 菜单主元素-->
+            <ul class="nav" id="menuNave">
+
+            </ul>
+            <div class="tree-list outwindow">
+            	<div class="tree ztree"></div>
+            </div>
+        </div>
+        <div class="main">
+        	<div class="title">
+                <i class="sidebar-show"></i>
+                <ul class="tab ue-clear">
+                   
+                </ul>
+                <i class="tab-more"></i>
+                <i class="tab-close"></i>
+            </div>
+            <div class="content">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="more-bab-list">
+	<ul></ul>
+    <div class="opt-panel-ml"></div>
+    <div class="opt-panel-mr"></div>
+    <div class="opt-panel-bc"></div>
+    <div class="opt-panel-br"></div>
+    <div class="opt-panel-bl"></div>
+</div>
+</body>
+<script type="text/javascript" src="js/nav.js"></script>
+<script type="text/javascript" src="js/Menu.js"></script>
+<script type="text/javascript" src="js/jquery.ztree.core-3.5.js"></script>
+<script type="text/javascript">
+
+    //获取cookie中存储的菜单权限数据
+    var resourcesList = getCookie("resourcesList");
+    //将cookie中存储的菜单数据 - 符号，替换成逗号
+    var resources = resourcesList.replace(/\-/g,",");
+    resources = resources.replace(/\-/g,",");
+    resources = resources.replace(/'/g, '"');//单引号替换为双引号
+    var resourcesArr = eval('('+resources+')');//转换为jsonArray;
+    var firstLevel = new Array();//第一级菜单Id数组
+    var firstLevelNameArr = new Array();//第一级菜单名称数组
+    //展示菜单
+    showMenu(resourcesArr);
+
+    //设置菜单展示
+    // str = str + "{'id':'"+id+"'-'name':'"+name+"'"
+    //     +"-'parentId':'"+parentId+"'-'type':'"+type+"'-'resurl':'"+resurl+"'"
+    //     +"-'level':'"+level+"'-'paixu':'"+paixu+"'}-";
+    function showMenu(resourcesArr){
+        //主要用于后面的第一级菜单位置的判断，处于第一个菜单，还是最后一个菜单
+        for(var i = 0;resourcesArr.length > i ;i++ ){
+            var resource = resourcesArr[i];
+            var id = resource.id;
+            var level = resource.level;
+            var name = resource.name;
+            if(level == "1"){
+                //如果是第一级菜单，将id存入数组,并且生成相应的元素
+                firstLevel.push(id);
+                firstLevelNameArr.push(name);
+            }
+        }
+        //生成第一级菜单元素
+        $("#menuNave").html("");
+        for(var j = 0; firstLevel.length > j;j++){
+            var firstLevelId = firstLevel[j];
+            var firstLevelName = firstLevelNameArr[j];
+            var firstLevelMenu = "";
+            var ulMenuId = "ul_firstlevel_"+firstLevelId;
+            if(j == 0 ){
+                //第一个第一级菜单
+                // language=HTML
+                firstLevelMenu = '<li class="nav-li current">'
+                                    +'<a href="javascript:;" class="ue-clear"><i class="nav-ivon"></i><span class="nav-text">'+firstLevelName+'</span></a>'
+                                    +'<ul class="subnav" id="'+ulMenuId+'"></ul>';
+            }else if(j == firstLevel.length - 1){
+                //最后一个第一级菜单
+                firstLevelMenu = '<li class="nav-li last-nav-li">'
+                    +'<a href="javascript:;" class="ue-clear"><i class="nav-ivon"></i><span class="nav-text">'+firstLevelName+'</span></a>'
+                    +'<ul class="subnav" id="'+ulMenuId+'"></ul>';
+
+            }else{
+                //其他第一级菜单
+                firstLevelMenu = '<li class="nav-li">'
+                    +'<a href="javascript:;" class="ue-clear"><i class="nav-ivon"></i><span class="nav-text">'+firstLevelName+'</span></a>'
+                    +'<ul class="subnav" id="'+ulMenuId+'"></ul>';
+            }
+            $("#menuNave").append($(firstLevelMenu));
+        }
+        firstLevel.reverse();
+
+        for(var j = 0; firstLevel.length > j;j++){
+
+            for(var i = 0;resourcesArr.length > i ;i++ ){
+                var resource = resourcesArr[i];
+                var parentId = resource.parentId;
+                var name = resource.name;
+                var url = resource.resurl;
+                var id = resource.id;
+                //局部二级菜单变量
+                var secondLevelMenu = "";
+
+                if(level !='1' && parentId == firstLevel[j]){
+                    //第二级别菜单
+                    secondLevelMenu = ' <li class="subnav-li" href="'+url+'.html" data-id="li_secondlevel_'+id+'">'
+                        +'<a href="javascript:;" class="ue-clear">'
+                        +'<i class="subnav-icon"></i>'
+                        +' <span class="subnav-text">'+name+'</span></a></li>'
+                    $("#ul_firstlevel_"+parentId).append($(secondLevelMenu));
+                }
+            }
+        }
+    }
+
+    //获取cookie中存储的数据
+    function getCookie(sName)
+    {
+        var aCookie = document.cookie.split("; ");
+        for (var i=0; aCookie.length > i ; i++)
+        {
+            var aCrumb = aCookie[i].split("=");
+            if (sName == aCrumb[0])
+                return unescape(aCrumb[1]);
+        }
+        return null;
+    }
+    var currentNav = $("#menuNave").children().eq(0).children().eq(1).children().eq(0).attr("data-id");
+
+    var menu = new Menu({
+		defaultSelect: $('.nav').find('li[data-id="'+currentNav+'"]')
+	});
+	
+	// // 左侧树结构加载
+	// var setting = {};
+    //
+	// 	var zNodes =[
+	// 		{ name:"新闻管理",
+	// 		   children: [
+	// 			 { name:"新闻视频管理",icon:'images/skin_/leftlist.png'},
+	// 			 { name:"新闻频道管理",icon:'images/skin_/leftlist.png'}
+	// 		]}
+	// 	];
+    //
+	// $.fn.zTree.init($(".tree"), setting, zNodes);
+	
+	
+	$('.sidebar h2').click(function(e) {
+        $('.tree-list').toggleClass('outwindow');
+		$('.nav').toggleClass('outwindow');
+    });
+	
+	$(document).click(function(e) {
+		if(!$(e.target).is('.tab-more')){
+			 $('.tab-more').removeClass('active');
+			 $('.more-bab-list').hide();
+		}
+    });
+</script>
+</html>

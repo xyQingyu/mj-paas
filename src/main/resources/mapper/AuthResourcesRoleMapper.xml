@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.llmj.mjpaas.mapper.AuthResourcesRoleMapper" >
+
+    <select id="findResourcesByUserName" resultType="AuthResourcesRole" parameterType="AuthResourcesRole" >
+
+       SELECT
+        resource.*
+    FROM
+        auth_user u
+        LEFT JOIN auth_user_role u_role ON u.userid = u_role.user_id
+        LEFT JOIN auth_role role ON u_role.role_id = role.id
+        LEFT JOIN auth_resources_role resource_role ON resource_role.ROLE_ID = role.id
+        LEFT JOIN auth_resources resource ON resource.id = resource_role.RESC_ID
+        where
+    	u.username = #{username} order by resource.paixu asc
+    </select>
+
+
+</mapper>
