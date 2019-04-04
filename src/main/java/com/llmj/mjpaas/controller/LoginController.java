@@ -12,14 +12,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class LoginController {
     /**
      * 跳转到登录
+     *
      * @return
      */
     @RequestMapping(value = "login")
-    public String getString(){
+    public String getString() {
         return "login";
     }
-
-
 
 
 }

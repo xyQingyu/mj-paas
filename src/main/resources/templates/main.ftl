@@ -1,11 +1,12 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=emulateIE7" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <link rel="stylesheet" type="text/css" href="/css/style.css" />
-    <link rel="stylesheet" type="text/css" href="/css/skin_/main.css" />
-    <link rel="stylesheet" type="text/css" href="/css/jquery.dialog.css" />
+    <meta http-equiv="X-UA-Compatible" content="IE=emulateIE7"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" type="text/css" href="/css/style.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/skin_/main.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/jquery.dialog.css"/>
     <script type="text/javascript" src="/js/jquery.js"></script>
     <script type="text/javascript" src="/js/global.js"></script>
     <title>企业OA办公后台管理模板</title>
@@ -48,8 +49,8 @@
             <p class="tips">如果是请点击“确定”，否则点“取消”</p>
 
             <div class="buttons">
-                <input type="button" class="button long2 ok" value="确定" />
-                <input type="button" class="button long2 normal" value="取消" />
+                <input type="button" class="button long2 ok" value="确定"/>
+                <input type="button" class="button long2 normal" value="取消"/>
             </div>
         </div>
 
@@ -80,99 +81,98 @@
 <script type="text/javascript" src="/js/core.js"></script>
 <script type="text/javascript" src="/js/jquery.dialog.js"></script>
 <script type="text/javascript">
-    $("#bd").height($(window).height()-$("#hd").outerHeight()-26);
+    $("#bd").height($(window).height() - $("#hd").outerHeight() - 26);
 
-    $(window).resize(function(e) {
-        $("#bd").height($(window).height()-$("#hd").outerHeight()-26);
+    $(window).resize(function (e) {
+        $("#bd").height($(window).height() - $("#hd").outerHeight() - 26);
 
     });
 
     $('.exitDialog').Dialog({
-        title:'提示信息',
+        title: '提示信息',
         autoOpen: false,
-        width:400,
-        height:200
+        width: 400,
+        height: 200
     });
 
-    $('.exit').click(function(){
+    $('.exit').click(function () {
         $('.exitDialog').Dialog('open');
     });
 
-    $('.exitDialog input[type=button]').click(function(e) {
+    $('.exitDialog input[type=button]').click(function (e) {
         $('.exitDialog').Dialog('close');
 
-        if($(this).hasClass('ok')){
-            window.location.href = "/logout"	;
+        if ($(this).hasClass('ok')) {
+            window.location.href = "/logout";
         }
     });
 
-    (function(){
+    (function () {
         var totalWidth = 0, current = 1;
 
-        $.each($('.nav').find('li'), function(){
+        $.each($('.nav').find('li'), function () {
             totalWidth += $(this).outerWidth();
         });
 
         $('.nav').width(totalWidth);
 
-        function currentLeft(){
+        function currentLeft() {
             return -(current - 1) * 93;
         }
 
-        $('.nav-btn a').click(function(e) {
-            var tempWidth = totalWidth - ( Math.abs($('.nav').css('left').split('p')[0]) + $('.nav-wrap').width() );
-            if($(this).hasClass('nav-prev-btn')){
-                if( parseInt($('.nav').css('left').split('p')[0])  < 0){
+        $('.nav-btn a').click(function (e) {
+            var tempWidth = totalWidth - (Math.abs($('.nav').css('left').split('p')[0]) + $('.nav-wrap').width());
+            if ($(this).hasClass('nav-prev-btn')) {
+                if (parseInt($('.nav').css('left').split('p')[0]) < 0) {
                     current--;
                     Math.abs($('.nav').css('left').split('p')[0]) > 93 ? $('.nav').animate({'left': currentLeft()}, 200) : $('.nav').animate({'left': 0}, 200);
                 }
-            }else{
+            } else {
 
-                if(tempWidth  > 0)	{
+                if (tempWidth > 0) {
 
                     current++;
-                    tempWidth > 93 ? $('.nav').animate({'left': currentLeft()}, 200) : $('.nav').animate({'left': $('.nav').css('left').split('p')[0]-tempWidth}, 200);
+                    tempWidth > 93 ? $('.nav').animate({'left': currentLeft()}, 200) : $('.nav').animate({'left': $('.nav').css('left').split('p')[0] - tempWidth}, 200);
                 }
             }
         });
 
 
-
-        $.each($('.skin-opt li'),function(index, element){
-            if((index + 1) % 3 == 0){
+        $.each($('.skin-opt li'), function (index, element) {
+            if ((index + 1) % 3 == 0) {
                 $(this).addClass('third');
             }
-            $(this).css('background',$(this).attr('attr-color'));
+            $(this).css('background', $(this).attr('attr-color'));
         });
 
-        $('.setting-skin').click(function(e) {
+        $('.setting-skin').click(function (e) {
             $('.skin-opt').show();
         });
 
-        $('.skin-opt').click(function(e) {
-            if($(e.target).is('li')){
+        $('.skin-opt').click(function (e) {
+            if ($(e.target).is('li')) {
                 alert($(e.target).attr('attr-color'));
             }
         });
 
-        $('.hd-top .user-info .more-info').click(function(e) {
+        $('.hd-top .user-info .more-info').click(function (e) {
             $(this).toggleClass('active');
             $('.user-opt').toggle();
         });
 
-        $('.logo-icon').click(function(e) {
+        $('.logo-icon').click(function (e) {
             $(this).toggleClass('active');
             $('.system-switch').toggle();
         });
 
-        hideElement($('.user-opt'), $('.more-info'), function(current, target){
+        hideElement($('.user-opt'), $('.more-info'), function (current, target) {
 
             $('.more-info').removeClass('active');
         });
 
         hideElement($('.skin-opt'), $('.switch-bar'));
 
-        hideElement($('.system-switch'), $('.logo-icon'), function(current, target){
+        hideElement($('.system-switch'), $('.logo-icon'), function (current, target) {
 
             $('.logo-icon').removeClass('active');
         });
@@ -182,7 +182,7 @@
     })();
 
     //根据权限创建菜单列表
-    function createMenuListByResources(){
+    function createMenuListByResources() {
 
 
     }

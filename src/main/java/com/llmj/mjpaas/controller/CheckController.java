@@ -4,6 +4,7 @@ import com.llmj.mjpaas.model.AuthResourcesRole;
 import com.llmj.mjpaas.model.AuthUser;
 import com.llmj.mjpaas.service.AuthResourcesRoleService;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
@@ -16,6 +17,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 
@@ -23,57 +25,66 @@ import java.util.List;
 public class CheckController {
     @Resource
     private AuthResourcesRoleService authResourcesRoleService;
+
     /*
      * 将登陆的用户/密码传入UsernamePasswordToken，当调用subject.login(token)开始，调用Relam的doGetAuthenticationInfo方法，开始密码验证
      * 此时这个时候执行我们自己编写的CredentialMatcher（密码匹配器），执行doCredentialsMatch方法，具体的密码比较实现在这实现
      *
      * */
-    @RequestMapping(value = { "/loginUser" },
-            method = { RequestMethod.POST }, produces="application/json;charset=UTF-8")
+    @RequestMapping(value = {"/loginUser"},
+            method = {RequestMethod.POST}, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String loginUser(String username,
-                            String password,
+    public String loginUser(@NotNull(message = "用户名不能为空")String username,
+                            @NotNull(message = "密码不能为空")String password,
                             HttpSession session) {
         UsernamePasswordToken token = new UsernamePasswordToken(username, password);
         Subject subject = SecurityUtils.getSubject();
+        System.out.println("获取到信息，开始验证！！");
         try {
-            System.out.println("获取到信息，开始验证！！");
             subject.login(token);//登陆成功的话，放到session中
             AuthUser user = (AuthUser) subject.getPrincipal();
-            session.setAttribute("user", user);
-            session.setAttribute("userName",user.getUsername());
 
-            return  "{\"result\":\"success\",\"msg\":\"登录成功！\"}";
-        } catch (Exception e) {
-            return  "{\"result\":\"fail\",\"msg\":\"用户或密码错误！\"}";
+            session.setAttribute("user", user);
+            session.setAttribute("userName", user.getUsername());
+
+            return "{\"result\":\"success\",\"msg\":\"登录成功！\"}";
+
+        } catch(UnknownAccountException ex){
+
+            return "{\"result\":\"fail\",\"msg\":\"用户名不可为空！\"}";
+
+        }catch (Exception e) {
+
+            return "{\"result\":\"fail\",\"msg\":\"用户或密码错误！\"}";
         }
     }
 
 
     /**
      * 跳转到首页
+     *
      * @return
      */
     @RequestMapping(value = "main")
-    public String getMain(HttpSession session, HttpServletResponse response){
+    public String getMain(HttpSession session, HttpServletResponse response) {
         //存放当前登录人员的权限菜单信息
         String userName = "";
         //存放cookie中的权限菜单
         String cookieResources = "";
 
-        if(session != null){
+        if (session != null) {
             userName = session.getAttribute("userName").toString();
         }
         //查询当前登录人的菜单资源
         AuthResourcesRole resources = new AuthResourcesRole();
         resources.setUsername(userName);
-        List<AuthResourcesRole>  authResourcesRoleList = authResourcesRoleService.findResourcesByUserName(resources);
-       //将菜单资源转换为jsonArray
-        if(authResourcesRoleList.size() > 0){
+        List<AuthResourcesRole> authResourcesRoleList = authResourcesRoleService.findResourcesByUserName(resources);
+        //将菜单资源转换为jsonArray
+        if (authResourcesRoleList.size() > 0) {
             cookieResources = getResourcesStr(authResourcesRoleList);
         }
         //设置菜单进入cookie中
-        Cookie cookie=new Cookie("resourcesList",cookieResources);
+        Cookie cookie = new Cookie("resourcesList", cookieResources);
         cookie.setPath("/");
         //关闭浏览器失效
         cookie.setMaxAge(-1);
@@ -84,10 +95,10 @@ public class CheckController {
 
     /**
      * 将菜单转换成jsonArray字符串
-     * */
-    public String getResourcesStr( List<AuthResourcesRole>  authResourcesRoleList){
+     */
+    public String getResourcesStr(List<AuthResourcesRole> authResourcesRoleList) {
         String str = "";
-        for(AuthResourcesRole resourcesRole : authResourcesRoleList){
+        for (AuthResourcesRole resourcesRole : authResourcesRoleList) {
             String id = resourcesRole.getId();
             String name = resourcesRole.getName();
             String parentId = resourcesRole.getParentid();
@@ -96,12 +107,12 @@ public class CheckController {
             String level = resourcesRole.getLevel();
             String paixu = resourcesRole.getPaixu();
             //不可以用,号，cookie存值会报错，页面获取时，用replace方法转换
-            str = str + "{'id':'"+id+"'-'name':'"+name+"'"
-                    +"-'parentId':'"+parentId+"'-'type':'"+type+"'-'resurl':'"+resurl+"'"
-                    +"-'level':'"+level+"'-'paixu':'"+paixu+"'}-";
+            str = str + "{'id':'" + id + "'-'name':'" + name + "'"
+                    + "-'parentId':'" + parentId + "'-'type':'" + type + "'-'resurl':'" + resurl + "'"
+                    + "-'level':'" + level + "'-'paixu':'" + paixu + "'}-";
         }
-        if(str.length() > 0){
-            str ="[" + str.substring(0,str.length()-1) + "]";
+        if (str.length() > 0) {
+            str = "[" + str.substring(0, str.length() - 1) + "]";
         }
         return str;
     }

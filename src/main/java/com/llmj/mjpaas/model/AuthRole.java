@@ -4,7 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="auth_role")
+@Table(name = "auth_role")
 public class AuthRole {
     private String id;
     private String name;
